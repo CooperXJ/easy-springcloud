@@ -1,0 +1,86 @@
+server:
+  port: 8801
+
+spring:
+  application:
+    name: power-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 172.23.27.117:8848,172.23.27.117:8849,172.23.27.117:8850  #配置Nacos地址
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: user-management     #路由的ID，没有固定规则但要求唯一，建议配合服务名
+          uri: lb://user-management #匹配后提供服务的路由地址
+          predicates:
+            - Path=/power/companyUser/**        # 断言，路径相匹配的进行路由
+#          filters:
+#            - StripPrefix=1 #此处不需要剥离前缀
+#
+#        - id: payment_routh2 #payment_route    #路由的ID，没有固定规则但要求唯一，建议配合服务名
+#          #uri: http://localhost:8001          #匹配后提供服务的路由地址
+#          uri: lb://cloud-payment-service #匹配后提供服务的路由地址
+#          predicates:
+#            - Path=/payment/lb/**         # 断言，路径相匹配的进行路由
+            #- After=2020-02-21T15:51:37.485+08:00[Asia/Shanghai]
+            #- Cookie=username,zzyy
+            #- Header=X-Request-Id, \d+  # 请求头要有X-Request-Id属性并且值为整数的正则表达式
+
+  # redis配置
+  redis:
+    # Redis数据库索引（默认为0）
+    database: 1
+    # Redis服务器地址
+    host: 172.23.27.120
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    # password:
+    # 连接超时时间（毫秒）
+    timeout: 1000ms
+    lettuce:
+      pool:
+        # 连接池最大连接数
+        max-active: 200
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1ms
+        # 连接池中的最大空闲连接
+        max-idle: 10
+        # 连接池中的最小空闲连接
+        min-idle: 0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+## 激活Sentinel对Feign的支持
+#feign:
+#  sentinel:
+#    enabled: true
+
+# Sa-Token配置
+sa-token:
+  # token名称 (同时也是cookie名称)
+  token-name: Authorization #satoken
+  # token有效期，单位s 默认30天, -1代表永不过期
+  timeout: 2592000
+  # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  activity-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: false
+  # token风格
+  token-style: random-64
+  # 是否输出操作日志
+  is-log: false
+  # 前缀
+  token-prefix: Bearer
+
+

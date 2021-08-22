@@ -1,0 +1,61 @@
+server:
+  port: 8800
+  servlet:
+    context-path: /power/companyUser
+
+spring:
+  application:
+    name: user-management
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 172.23.27.117:8848,172.23.27.117:8849,172.23.27.117:8850  #配置Nacos地址
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      url: jdbc:mysql://172.23.27.120:3306/power?nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=GMT%2B8&useSSL=false
+      username: root
+      password: 123456
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      initialSize: 6
+      minIdle: 6
+      maxActive: 20
+      filter:
+        stat:
+          enabled: true
+          db-type: mysql
+          log-slow-sql: true
+          slow-sql-millis: 2000
+      web-stat-filter:
+        enabled: true
+        exclusions:
+          - "*.js"
+          - "*.gif"
+          - "*.jpg"
+          - "*.png"
+          - "*.css"
+          - "*.ico"
+          - "/druid/*"
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+mybatis-plus:
+  #注意：一定要对应mapper映射xml文件的所在路径
+  mapper-locations: classpath:/mapping/*.xml
+  # 注意：对应实体类的路径//entity扫描的包名
+  type-aliases-package: com.cqupt.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+    call-setters-on-nulls: true
+  global-config:
+    banner: false
+
